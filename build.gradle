@@ -3,7 +3,7 @@ plugins {
 }
 
 version = "0.1"
-group = "com.example"
+group = "cn.xr21.me"
 
 repositories {
     mavenCentral()

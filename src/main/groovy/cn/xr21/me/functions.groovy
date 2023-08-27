@@ -1,5 +1,3 @@
-package cn.xr21.me
-
 import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
@@ -9,7 +7,6 @@ import org.apache.http.HttpResponse
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.util.EntityUtils
-import org.bouncycastle.util.Arrays
 
 import java.awt.*
 import java.lang.annotation.*
@@ -37,43 +34,6 @@ import java.lang.annotation.*
     String name() default "";
 
 }
-
-//class LatitudeAndLongitude {
-//    @Parameter(name = "latitude", value = "经度", required = true)
-//    public double latitude;
-//    @Parameter(name = "longitude", value = "维度")
-//    public double longitude
-//}
-//
-//@GPTFunction(name = "getCurrentWeather", value = "根据经纬度获取天气信息")
-//getCurrentWeather(LatitudeAndLongitude latitudeAndLongitude) {
-//    //获取天气信息
-//    def apiKey = '825dfb2693524a968515c7ad58e72122'
-//    def apiUrl = "https://api.weatherbit.io/v2.0/current?&lat=${latitudeAndLongitude.latitude}&lon=${latitudeAndLongitude.longitude}&lang=zh&key=${apiKey}"
-//    def connection = new URL(apiUrl).openConnection() as HttpURLConnection
-//    connection.setRequestMethod("GET")
-//    try {
-//        def responseCode = connection.getResponseCode()
-//        if (responseCode == HttpURLConnection.HTTP_OK) {
-//            def reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))
-//            StringBuilder response = new StringBuilder()
-//            String line
-//            while ((line = reader.readLine()) != null) {
-//                response.append(line)
-//            }
-//            reader.close()
-//            println(response.toString())
-//            return response.toString();
-//        } else {
-//            println("Request failed. Response Code: $responseCode")
-//        }
-//    } catch (Exception e) {
-//        println("An error occurred: ${e.getMessage()}")
-//    } finally {
-//        connection.disconnect()
-//    }
-//    return ""
-//}
 
 class BingSearchQuery {
     @Parameter(name = "query", value = "搜索关键字", required = true)
@@ -105,7 +65,7 @@ static news(NewsQuery query) {
     try {
         String endpoint = "https://hub.onmicrosoft.cn/public/news?index=1"
         HttpGet httpGet = new HttpGet(endpoint);
-        HttpResponse response = HttpClientBuilder.create().build().execute(httpGet);
+        HttpResponse response = HttpClientBuilder.create().build().execute(httpGet)
         return EntityUtils.toString(response.getEntity())
     } catch (Exception e) {
         throw new RuntimeException("执行失败：" + e.getMessage())
@@ -116,7 +76,7 @@ static news(NewsQuery query) {
 class Command {
 
     @Parameter(name = "command", value = "一个完整的powershell命令脚本、必须可以在客户端本地主机直接执行", required = true)
-    String command;
+    String command
 }
 
 /**
@@ -132,19 +92,19 @@ class Command {
  * @return 执行结果字符串
  */
 String executeCommand(Command command) {
-    StringBuilder output = new StringBuilder();
-    output.append("执行成功：");
+    StringBuilder output = new StringBuilder()
+    output.append("执行成功：")
     try {
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.directory(new File(getActiveProject().basePath));
-        processBuilder.command("powershell.exe", "/c", command.command);
-        processBuilder.redirectErrorStream(true);
-        Process process = processBuilder.start();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), "GBK"));
-        String line;
+        ProcessBuilder processBuilder = new ProcessBuilder()
+        processBuilder.directory(new File(getActiveProject().basePath))
+        processBuilder.command("powershell.exe", "/c", command.command)
+        processBuilder.redirectErrorStream(true)
+        Process process = processBuilder.start()
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), "GBK"))
+        String line
         // 逐行读取命令输出并添加到结果字符串中
         while ((line = reader.readLine()) != null) {
-            output.append(line).append("\n");
+            output.append(line).append("\n")
         }
         process.waitFor();
     } catch (IOException | InterruptedException e) {
@@ -152,7 +112,7 @@ String executeCommand(Command command) {
         println("IOException: ${e.getMessage()}");
     }
 
-    return output.toString();
+    return output as StringBuilder.toString();
 }
 
 
@@ -192,8 +152,8 @@ static String githubSearch(Keyword search) {
     while ((line = stdinReader.readLine()) != null) {
         output.append(line).append("\n");
     }
-    def slurper = new JsonSlurper()
-    def data = slurper.parseText(output.toString())
+    def JSON = new JsonSlurper()
+    def data = JSON.parseText(output.toString())
     def result = data["items"].collect { item ->
         def projectName = item.name
         def projectUrl = item.html_url
@@ -208,12 +168,6 @@ static String githubSearch(Keyword search) {
     return result
 }
 
-
-/*******************************TEST**************************************/
-//LatitudeAndLongitude latitudeAndLongitude = new LatitudeAndLongitude();
-//latitudeAndLongitude.latitude = 31.2304
-//latitudeAndLongitude.longitude = 121.4737
-//getCurrentWeather(latitudeAndLongitude)
 /*******************************TEST**************************************/
 command = new Command()
 command.command = "ipconfig"
