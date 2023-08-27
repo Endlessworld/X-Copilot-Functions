@@ -60,6 +60,7 @@ class NewsQuery {
     @Parameter(name = "index", value = "页码最大3", required = false)
     public int index
 }
+
 @GPTFunction(name = "news", value = "今日新闻头条、每天60秒读懂世界")
 static news(NewsQuery query) {
     try {
@@ -184,7 +185,7 @@ println(searchBing(new BingSearchQuery(query: "隔壁老王", count: 10)))
 static Project getActiveProject() {
     return WriteAction.computeAndWait(() -> {
         Project[] projects = ProjectManager.getInstance().getOpenProjects();
-        if (Arrays.isNullOrEmpty(projects)) {
+        if (projects != null && projects.length > 0) {
             return ProjectManager.getInstance().getDefaultProject();
         }
         if (projects.length == 1) {
