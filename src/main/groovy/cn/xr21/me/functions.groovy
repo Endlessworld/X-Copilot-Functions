@@ -7,6 +7,7 @@ import org.apache.http.HttpResponse
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.util.EntityUtils
+import org.bouncycastle.util.Arrays
 
 import java.awt.*
 import java.lang.annotation.*
@@ -35,6 +36,8 @@ import java.lang.annotation.*
 
 }
 
+
+
 class BingSearchQuery {
     @Parameter(name = "query", value = "搜索关键字", required = true)
     public String query
@@ -60,13 +63,12 @@ class NewsQuery {
     @Parameter(name = "index", value = "页码最大3", required = false)
     public int index
 }
-
 @GPTFunction(name = "news", value = "今日新闻头条、每天60秒读懂世界")
 static news(NewsQuery query) {
     try {
         String endpoint = "https://hub.onmicrosoft.cn/public/news?index=1"
         HttpGet httpGet = new HttpGet(endpoint);
-        HttpResponse response = HttpClientBuilder.create().build().execute(httpGet)
+        HttpResponse response = HttpClientBuilder.create().build().execute(httpGet);
         return EntityUtils.toString(response.getEntity())
     } catch (Exception e) {
         throw new RuntimeException("执行失败：" + e.getMessage())
@@ -77,7 +79,7 @@ static news(NewsQuery query) {
 class Command {
 
     @Parameter(name = "command", value = "一个完整的powershell命令脚本、必须可以在客户端本地主机直接执行", required = true)
-    String command
+    String command;
 }
 
 /**
@@ -93,19 +95,19 @@ class Command {
  * @return 执行结果字符串
  */
 String executeCommand(Command command) {
-    StringBuilder output = new StringBuilder()
-    output.append("执行成功：")
+    StringBuilder output = new StringBuilder();
+    output.append("执行成功：");
     try {
-        ProcessBuilder processBuilder = new ProcessBuilder()
-        processBuilder.directory(new File(getActiveProject().basePath))
-        processBuilder.command("powershell.exe", "/c", command.command)
-        processBuilder.redirectErrorStream(true)
-        Process process = processBuilder.start()
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), "GBK"))
-        String line
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        processBuilder.directory(new File(getActiveProject().basePath));
+        processBuilder.command("powershell.exe", "/c", command.command);
+        processBuilder.redirectErrorStream(true);
+        Process process = processBuilder.start();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), "GBK"));
+        String line;
         // 逐行读取命令输出并添加到结果字符串中
         while ((line = reader.readLine()) != null) {
-            output.append(line).append("\n")
+            output.append(line).append("\n");
         }
         process.waitFor();
     } catch (IOException | InterruptedException e) {
@@ -113,7 +115,7 @@ String executeCommand(Command command) {
         println("IOException: ${e.getMessage()}");
     }
 
-    return output;
+    return output.toString();
 }
 
 
@@ -153,8 +155,8 @@ static String githubSearch(Keyword search) {
     while ((line = stdinReader.readLine()) != null) {
         output.append(line).append("\n");
     }
-    def JSON = new JsonSlurper()
-    def data = JSON.parseText(output.toString())
+    def slurper = new JsonSlurper()
+    def data = slurper.parseText(output.toString())
     def result = data["items"].collect { item ->
         def projectName = item.name
         def projectUrl = item.html_url
@@ -185,7 +187,7 @@ println(searchBing(new BingSearchQuery(query: "隔壁老王", count: 10)))
 static Project getActiveProject() {
     return WriteAction.computeAndWait(() -> {
         Project[] projects = ProjectManager.getInstance().getOpenProjects();
-        if (projects != null && projects.length > 0) {
+        if (Arrays.isNullOrEmpty(projects)) {
             return ProjectManager.getInstance().getDefaultProject();
         }
         if (projects.length == 1) {
