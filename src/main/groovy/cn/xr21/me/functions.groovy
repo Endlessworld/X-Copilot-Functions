@@ -112,7 +112,7 @@ String executeCommand(Command command) {
         println("IOException: ${e.getMessage()}");
     }
 
-    return output as StringBuilder.toString();
+    return output;
 }
 
 
