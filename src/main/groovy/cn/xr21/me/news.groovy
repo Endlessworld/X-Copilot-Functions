@@ -4,6 +4,36 @@ import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.util.EntityUtils
 
+import java.lang.annotation.Documented
+import java.lang.annotation.ElementType
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+import java.lang.annotation.Target
+
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@interface Parameter {
+
+    String value() default "";
+
+    String name() default "";
+
+    boolean required() default false;
+
+}
+
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@interface GPTFunction {
+
+    String value() default "";
+
+    String name() default "";
+
+}
+
 class NewsQuery {
     @Parameter(name = "index", value = "新闻发生时间与今天的差值 0 今天 1 昨天 2前天 依此类推", required = false)
     public int index
