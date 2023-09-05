@@ -2,6 +2,7 @@ import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.wm.WindowManager
+import com.intellij.util.ArrayUtil
 import groovy.json.JsonSlurper
 import org.apache.http.HttpResponse
 import org.apache.http.client.methods.HttpGet
@@ -186,7 +187,7 @@ println(searchBing(new BingSearchQuery(query: "隔壁老王", count: 10)))
 static Project getActiveProject() {
     return WriteAction.computeAndWait(() -> {
         Project[] projects = ProjectManager.getInstance().getOpenProjects();
-        if (Arrays.isNullOrEmpty(projects)) {
+        if (ArrayUtil.isEmpty(projects)) {
             return ProjectManager.getInstance().getDefaultProject();
         }
         if (projects.length == 1) {
