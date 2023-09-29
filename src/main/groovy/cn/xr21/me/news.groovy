@@ -35,10 +35,10 @@ import java.lang.annotation.Target
 }
 
 class NewsQuery {
-    @Parameter(name = "index", value = "新闻发生时间与今天的差值 0 今天 1 昨天 2前天 依此类推", required = false)
+    @Parameter(name = "index", value = "The difference between the occurrence time of the news and today is 0 for today, 1 for yesterday, 2 for the day before yesterday, and so on.\n", required = false)
     public int index
 }
-@GPTFunction(name = "news", value = "新闻头条、每天60秒读懂世界 可根据指定日期与当前时间的天数差获取指定日期的新闻")
+@GPTFunction(name = "news", value = "Headlines, understand the world in 60 seconds a day. You can get news for a specific date by specifying the difference in days between the specified date and the\n")
 static news(NewsQuery query) {
     try {
         String endpoint = "https://hub.onmicrosoft.cn/public/news?index=${query.index}"
@@ -47,6 +47,6 @@ static news(NewsQuery query) {
         def data = new JsonSlurper().parseText(EntityUtils.toString(response.getEntity()))
         return data["data"]
     } catch (Exception e) {
-        throw new RuntimeException("执行失败：" + e.getMessage())
+        throw new RuntimeException("Execution failed:：" + e.getMessage())
     }
 }
