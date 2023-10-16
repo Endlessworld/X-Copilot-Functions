@@ -1,3 +1,5 @@
+package cn.xr21.me
+
 import groovy.json.JsonSlurper
 import org.apache.http.HttpResponse
 import org.apache.http.client.methods.HttpGet

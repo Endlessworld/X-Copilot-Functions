@@ -37,26 +37,26 @@ import java.lang.annotation.*
 }
 
 
-class BingSearchQuery {
-    @Parameter(name = "query", value = "Search keyword", required = true)
-    public String query
-
-    @Parameter(name = "count", value = "Return result count", required = true)
-    public int count
-}
-
-@GPTFunction(name = "searchBing", value = "Use Bing search API for web search\n")
-static searchBing(BingSearchQuery query) {
-    try {
-        String endpoint = "https://bing.search.api.xr21.me"
-        String url = "${endpoint}?query=${URLEncoder.encode(query.query, "UTF-8")}&count=5&answerCount=5&safeSearch=Off"
-        HttpGet httpGet = new HttpGet(url);
-        HttpResponse response = HttpClientBuilder.create().build().execute(httpGet);
-        return EntityUtils.toString(response.getEntity())
-    } catch (Exception e) {
-        throw new RuntimeException("Execution failed：" + e.getMessage())
-    }
-}
+//class BingSearchQuery {
+//    @Parameter(name = "query", value = "Search keyword", required = true)
+//    public String query
+//
+//    @Parameter(name = "count", value = "Return result count", required = true)
+//    public int count
+//}
+//
+//@GPTFunction(name = "searchBing", value = "Use Bing search API for web search\n")
+//static searchBing(BingSearchQuery query) {
+//    try {
+//        String endpoint = "https://bing.search.api.xr21.me"
+//        String url = "${endpoint}?query=${URLEncoder.encode(query.query, "UTF-8")}&count=5&answerCount=5&safeSearch=Off"
+//        HttpGet httpGet = new HttpGet(url);
+//        HttpResponse response = HttpClientBuilder.create().build().execute(httpGet);
+//        return EntityUtils.toString(response.getEntity())
+//    } catch (Exception e) {
+//        throw new RuntimeException("Execution failed：" + e.getMessage())
+//    }
+//}
 
 
 class Command {
@@ -165,7 +165,7 @@ key.page = 1
 key.per_page = 10
 println(githubSearch(key))
 /*******************************TEST**************************************/
-println(searchBing(new BingSearchQuery(query: "隔壁老王", count: 10)))
+//println(searchBing(new BingSearchQuery(query: "隔壁老王", count: 10)))
 
 static Project getActiveProject() {
     return WriteAction.computeAndWait(() -> {
