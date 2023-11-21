@@ -129,7 +129,14 @@ class Keyword {
 @GPTFunction(name = "githubSearch", value = "This method can be used to search for Git repositories.\n")
 static String githubSearch(Keyword search) {
     StringBuilder output = new StringBuilder();
-    def searchUrl = "https://api.github.com/search/repositories?" + "language=${search.language}" + "&user=${search.user}" + "&sort=${search.sort}" + "&order=${search.order}" + "&page=${search.page}" + "&per_page=${search.per_page}" + "&q=${search.keyword}"
+    def searchUrl = "https://api.github.com/search/repositories?" +
+            "language=${search.language}" +
+            "&user=${search.user}" +
+            "&sort=${search.sort}" +
+            "&order=${search.order}" +
+            "&page=${search.page}" +
+            "&per_page=${search.per_page}" +
+            "&q=${URLEncoder.encode(search.keyword,'utf-8')}"
     def connection = new URL(searchUrl).openConnection()
     connection.setRequestProperty("Accept", "application/vnd.github.v3+json")
     connection.connect()
