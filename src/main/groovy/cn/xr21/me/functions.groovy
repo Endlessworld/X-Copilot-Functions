@@ -4,10 +4,6 @@ import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.ArrayUtil
 import groovy.json.JsonSlurper
-import org.apache.http.HttpResponse
-import org.apache.http.client.methods.HttpGet
-import org.apache.http.impl.client.HttpClientBuilder
-import org.apache.http.util.EntityUtils
 
 import java.awt.*
 import java.lang.annotation.*
@@ -61,45 +57,49 @@ import java.lang.annotation.*
 
 class Command {
 
-    @Parameter(name = "command", value = "A complete PowerShell command script that can be executed directly on the client's local host.", required = true)
+    @Parameter(name = "command", value = "A commands on Windows, Linux, or macOS.", required = true)
     String command;
 }
 
 /**
- * 执行powershell脚本，参数必须可以在客户端本地主机直接执行
+ * 执行命令，支持 Windows、Linux 和 macOS
  *
- * @param command 命令对象，包含要执行的powershell命令脚本
- * @return 返回cmd命令执行结果字符串
+ * @param command 命令对象，包含要执行的命令
+ * @return 返回命令执行结果字符串
  */
-@GPTFunction(name = "executeCommand", value = "Execute PowerShell scripts, you can use this callback function to execute PowerShell commands to read files, access the network, and launch software to control the user's local computer.")
-/**
- * 执行命令并返回执行结果
- * @param command 命令对象
- * @return 执行结果字符串
- */
+@GPTFunction(name = "executeCommand", value = "Execute commands on Windows, Linux, and macOS.")
 String executeCommand(Command command) {
     StringBuilder output = new StringBuilder();
     output.append("Execution successful.\n：");
     try {
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.directory(new File(getActiveProject().basePath));
-        processBuilder.command("powershell.exe", "/c", command.command);
+        // 根据操作系统选择命令
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("win")) {
+            processBuilder.command("cmd.exe", "/c", command.command);
+        } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
+            processBuilder.command("bash", "-c", command.command);
+        } else {
+            return "Unsupported operating system: " + os;
+        }
         processBuilder.redirectErrorStream(true);
         Process process = processBuilder.start();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), "GBK"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
         String line;
         // 逐行读取命令输出并添加到结果字符串中
         while ((line = reader.readLine()) != null) {
             output.append(line).append("\n");
         }
         process.waitFor();
-    } catch (IOException | InterruptedException e) {
+    } catch (Throwable e) {
         e.printStackTrace();
         println("IOException: ${e.getMessage()}");
     }
 
     return output.toString();
 }
+
 
 
 class Keyword {
